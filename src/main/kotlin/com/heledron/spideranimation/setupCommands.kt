@@ -1,3 +1,4 @@
+```kotlin
 package com.heledron.spideranimation
 
 import com.heledron.spideranimation.spider.components.splay
@@ -453,6 +454,58 @@ fun setupCommands(plugin: SpiderAnimationPlugin) {
 
     setupCustomItemCommand()
 
+    getCommand("boss").apply {
+        setExecutor { sender, _, _, args ->
+            val player = sender as? org.bukkit.entity.Player ?: return@setExecutor true
+            val subCommand = args.getOrNull(0)?.lowercase()
+            val scale = args.getOrNull(1)?.toDoubleOrNull() ?: 1.0
+
+            when (subCommand) {
+                "item" -> {
+                    val item = org.bukkit.inventory.ItemStack(org.bukkit.Material.FERMENTED_SPIDER_EYE).apply {
+                        itemMeta = itemMeta?.apply {
+                            setDisplayName("§c§lMắt Nhện Biến Dị")
+                            lore = listOf("§7Chuột phải triệu hồi Nhện Khổng Lồ", "§7Kích thước: §e$scale")
+                            persistentDataContainer.set(
+                                org.bukkit.NamespacedKey(plugin, "boss_scale"),
+                                org.bukkit.persistence.PersistentDataType.DOUBLE,
+                                scale
+                            )
+                        }
+                    }
+                    player.inventory.addItem(item)
+                    player.sendMessage("§aĐã nhận item triệu hồi cỡ $scale!")
+                }
+                "randomspawn" -> {
+                    val randomLoc = player.location.clone().apply {
+                        x += (-30..30).random()
+                        z += (-30..30).random()
+                        y = (-64..0).random().toDouble() 
+                    }
+
+                    val oldScale = AppState.options.bodyPlan.scale
+                    AppState.options.scale(scale / oldScale)
+                    plugin.writeAndSaveConfig()
+
+                    AppState.recreateSpider()
+                    runLater(2L) {
+                        AppState.spider?.teleport(randomLoc)
+                    }
+
+                    player.sendMessage("§aĐã spawn Nhện Khổng Lồ (Size: $scale) tại Hang Sâu: X:${randomLoc.blockX} Y:${randomLoc.blockY} Z:${randomLoc.blockZ}")
+                }
+                else -> player.sendMessage("§cCú pháp: /boss item <scale> hoặc /boss randomspawn <scale>")
+            }
+            return@setExecutor true
+        }
+
+        setTabCompleter { _, _, _, args ->
+            if (args.size == 1) return@setTabCompleter listOf("item", "randomspawn").filter { it.startsWith(args.last(), true) }
+            if (args.size == 2) return@setTabCompleter listOf("1.0", "2.0", "3.5", "5.0")
+            emptyList()
+        }
+    }
+
 //    getCommand("set_sound").apply {
 //        setExecutor() { sender, _, _, args ->
 //            val kind = args.getOrNull(0) ?: return@setExecutor false
@@ -505,3 +558,5 @@ fun setupCommands(plugin: SpiderAnimationPlugin) {
         }
     }
 }
+
+```
