@@ -37,6 +37,9 @@ commands:
   splay:
     description: Splay
     permission: spider-animation.splay
+  boss:
+    description: Summon and configure the Boss Spider
+    permission: spider-animation.boss
 
 permissions:
   spider-animation.items:
@@ -71,4 +74,7 @@ permissions:
     default: op
   spider-animation.splay:
     description: Allows access to the splay command
+    default: op
+  spider-animation.boss:
+    description: Allows access to the boss command
     default: op
