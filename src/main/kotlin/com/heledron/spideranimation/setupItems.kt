@@ -39,6 +39,11 @@ fun setupItems() {
             val hitPosition = player.world.raycastGround(player.eyePosition, player.direction, 100.0)?.hitPosition ?: return@onGestureUse
 
             player.world.playSound(hitPosition, Sound.BLOCK_NETHERITE_BLOCK_PLACE, 1.0f, 1.0f)
+            
+            // Đồng bộ cấu hình Boss 6 block và bật ngụy trang
+            AppState.options = com.heledron.spideranimation.spider.presets.octopod(4, 6.0)
+            AppState.options.cloak.enabled = true
+
             AppState.createSpider(hitPosition.toLocation(player.world).apply { this.yaw = yaw })
             player.sendActionBar("Spider created")
         } else {
@@ -200,3 +205,4 @@ fun setupItems() {
         }
     }
 }
+
